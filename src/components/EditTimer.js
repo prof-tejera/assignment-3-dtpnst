@@ -1,36 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTimerContext } from './TimerContext';
 import TimeInput from "./generic/TimeInput";
 import Input from "./generic/Input";
+import { useParams } from "react-router-dom";
 
-const AddTimer = () => {
-  const { addTimer } = useTimerContext();
+const EditTimer = () => {
+  const { timerId } = useParams();
+  const { timers, updateTimer } = useTimerContext();
 
-  const [timerType, setTimerType] = useState('Stopwatch');
-  const [duration, setDuration] = useState( 0);
-  const [restTime, setRestTime] = useState( 0);
-  const [numRounds, setNumRounds] = useState( 0);
+  const timerToEdit = timers.find(timer => timer.id === Number(timerId));
 
-  const handleAddTimer = () => {
+  // TODO: Add error if timer not found and redirect to home page
 
-      const newTimer = {
-        id: new Date().getTime(),
-        type: timerType,
-        duration: duration,
-        restTime: restTime,
-        numRounds,
-      };
-      console.log(newTimer);
-      addTimer(newTimer);
-      setDuration(0);
-      setRestTime(0);
-      setNumRounds(0);
+  const [timerType, setTimerType] = useState(timerToEdit.type);
+  const [duration, setDuration] = useState(timerToEdit.duration);
+  const [restTime, setRestTime] = useState(timerToEdit.restTime);
+  const [numRounds, setNumRounds] = useState(timerToEdit.numRounds);
 
+  const handleUpdateTimer = () => {
+    const updatedTimer = {
+      id: Number(timerId),
+      type: timerType,
+      duration: duration,
+      restTime: restTime,
+      numRounds,
+    };
+
+    updateTimer(updatedTimer);
   };
+
+  useEffect(() => {
+    setTimerType(timerToEdit.type);
+    setDuration(timerToEdit.duration);
+    setRestTime(timerToEdit.restTime);
+    setNumRounds(timerToEdit.numRounds);
+  }, [timerToEdit]);
 
   return (
     <div>
-      <h2>Add Timer</h2>
+      <h2>Edit Timer</h2>
       <label>
         Timer Type:
         <select value={timerType} onChange={(e) => setTimerType(e.target.value)}>
@@ -62,9 +70,9 @@ const AddTimer = () => {
         </>
       )}
 
-      <button onClick={handleAddTimer}>Add Timer</button>
+      <button onClick={handleUpdateTimer}>Update Timer</button>
     </div>
   );
 };
 
-export default AddTimer;
+export default EditTimer;

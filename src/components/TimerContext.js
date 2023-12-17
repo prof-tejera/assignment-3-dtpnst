@@ -37,6 +37,27 @@ export const TimerProvider = ({ children }) => {
     });
 
   }
+
+  const updateTimer = updatedTimer => {
+    setTimers(prevTimers => {
+      const timerIndex = prevTimers.findIndex(timer => timer.id === updatedTimer.id);
+      if (timerIndex === -1) {
+        // Timer not found, return the previous state
+        return prevTimers;
+      }
+
+      // Replace the timer at timerIndex with updatedTimer
+      const newTimers = [...prevTimers];
+      newTimers[timerIndex] = updatedTimer;
+
+      // Update local storage
+      localStorage.setItem('timers', JSON.stringify(newTimers));
+
+      // Return the new timers array
+      return newTimers;
+    });
+  };
+
   const fastForward = () => {
     if(currentIndex === timers.length - 1) {
       restart();
@@ -84,7 +105,7 @@ export const TimerProvider = ({ children }) => {
   }, [currentTimerId, currentIndex, isWorkoutRunning, isRestart, currentTime, currentRound, isRest]);
 
   return (
-    <TimerContext.Provider value={{ timers, currentTimerId, currentIndex, isWorkoutRunning, isRestart, addTimer, removeTimer, fastForward, restart, startStop, currentTime, setCurrentTime, currentRound, setCurrentRound, isRest, setIsRest }}>
+    <TimerContext.Provider value={{ timers, currentTimerId, currentIndex, isWorkoutRunning, isRestart, addTimer, removeTimer, fastForward, restart, startStop, currentTime, setCurrentTime, currentRound, setCurrentRound, isRest, setIsRest, updateTimer }}>
       {children}
     </TimerContext.Provider>
   );

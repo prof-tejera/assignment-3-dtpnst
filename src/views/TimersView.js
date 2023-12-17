@@ -6,7 +6,8 @@ import XY from "../components/timers/XY";
 import Tabata from "../components/timers/Tabata";
 import { useTimerContext } from "../components/TimerContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faForward, faPause, faPlay, faRotateLeft, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faForward, faPause, faPlay, faRotateLeft, faXmark, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 
 const Timers = styled.div`
   display: flex;
@@ -75,6 +76,7 @@ const buttonContainerStyle = {
 }
 
 const TimersView = () => {
+  const navigate = useNavigate();
   const { timers, currentTimerId, startStop, fastForward, removeTimer, isWorkoutRunning, restart } = useTimerContext();
 
   const handleStartStopClick = () => {
@@ -93,6 +95,10 @@ const TimersView = () => {
     removeTimer(timerId);
   }
 
+  const handleEditTimer = (timerId) => {
+    navigate(`/edit/${timerId}`);
+  }
+
   return (
     <Timers>
       <div style={buttonContainerStyle}>
@@ -103,6 +109,7 @@ const TimersView = () => {
       {timers.map((timer, index) => (
         <Timer key={timer.id} className={(timer.id === currentTimerId) ? 'runningTimer' : 'notRunningTimer'}>
           <TimerTitle>#{index+1} {timer.type}</TimerTitle>
+          <FontAwesomeIcon icon={faPenToSquare} style={buttonStyle} onClick={() => handleEditTimer(timer.id)} />
           <FontAwesomeIcon icon={faXmark} style={removeButtonStyle} onClick={() => handleRemoveTimer(timer.id)} />
           {timer.type === "Countdown" && (
             <Countdown
