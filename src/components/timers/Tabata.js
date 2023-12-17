@@ -5,13 +5,10 @@ import Timer from "../generic/Timer";
 import { useTimerContext } from "../TimerContext";
 
 const Tabata = (timer) => {
-    const { currentTimerId, isWorkoutRunning, fastForward, isRestart } = useTimerContext();
-    const [currentTime, setCurrentTime] = useState(0); 
+    const { currentTimerId, isWorkoutRunning, fastForward, isRestart, currentTime, setCurrentTime, currentRound, setCurrentRound, isRest, setIsRest } = useTimerContext();
     const [workTime] = useState(timer.duration);
     const [restTime] = useState(timer.restTime);
     const [numRounds] = useState(timer.numRounds);
-    const [currentRound, setCurrentRound] = useState(0);
-    const [isRest, setIsRest] = useState(false);
 
 
     useEffect(() => {
@@ -41,7 +38,7 @@ const Tabata = (timer) => {
         }
       
         return () => clearInterval(timerInterval);
-      }, [timer, isWorkoutRunning, currentTimerId, fastForward, currentTime, workTime, restTime, currentRound, numRounds, isRest]);
+      }, [timer, isWorkoutRunning, currentTimerId, fastForward, currentTime, workTime, restTime, currentRound, numRounds, isRest, setCurrentTime, setCurrentRound, setIsRest]);
 
     useEffect(() => {
       if(isRestart) {
@@ -49,13 +46,13 @@ const Tabata = (timer) => {
         setCurrentRound(0)
         setIsRest(false);
       }
-    }, [isRestart])
+    }, [isRestart, setCurrentRound, setCurrentTime, setIsRest])
 
     return (
         <Panel>
             <Timer
-                currentTime={currentTime}
-                currentRound={currentRound}
+              currentTime={currentTimerId === timer.id ? currentTime : 0}
+              currentRound={currentTimerId === timer.id ? currentRound : 0}
             />
         </Panel>
     );

@@ -1,13 +1,11 @@
 import React from "react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Panel from "../generic/Panel";
 import Timer from "../generic/Timer";
 import { useTimerContext } from "../TimerContext";
 
 const Countdown = (timer) => {
-    const { currentTimerId, isWorkoutRunning, fastForward, isRestart } = useTimerContext();
-
-    const [currentTime, setCurrentTime] = useState(timer.duration);
+    const { currentTimerId, isWorkoutRunning, fastForward, isRestart, setCurrentTime, currentTime } = useTimerContext();
 
     useEffect(() => {
         let timerInterval;
@@ -31,19 +29,19 @@ const Countdown = (timer) => {
         }
 
         return () => clearInterval(timerInterval);
-    }, [timer, isWorkoutRunning, currentTimerId, currentTime, fastForward]);
+    }, [timer, isWorkoutRunning, currentTimerId, currentTime, fastForward, setCurrentTime]);
 
 
     useEffect(() => {
         if(isRestart) {
             setCurrentTime(timer.duration);
         }
-    }, [isRestart, timer.duration])
+    }, [isRestart, timer.duration, setCurrentTime])
 
     return (
       <Panel>
           <Timer
-            currentTime={currentTime}
+            currentTime={currentTimerId === timer.id ? currentTime : 0}
           />
       </Panel>
     );

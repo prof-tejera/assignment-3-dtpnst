@@ -5,10 +5,8 @@ import Timer from "../generic/Timer";
 import { useTimerContext } from "../TimerContext";
 
 const Stopwatch = (timer) => {
-    const { currentTimerId, isWorkoutRunning, fastForward, isRestart } = useTimerContext();
-    const [currentTime, setCurrentTime] = useState(0);
+    const { currentTimerId, isWorkoutRunning, fastForward, isRestart, currentTime, setCurrentTime } = useTimerContext();
     const [endTime] = useState(timer.duration);
-
 
     useEffect(() => {
         let timerInterval;
@@ -25,19 +23,19 @@ const Stopwatch = (timer) => {
         }
     
         return () => clearInterval(timerInterval);
-      }, [timer, isWorkoutRunning, currentTimerId, fastForward, currentTime, endTime]);
+      }, [timer, isWorkoutRunning, currentTimerId, fastForward, currentTime, endTime, setCurrentTime]);
 
     useEffect(() => {
       if(isRestart) {
         setCurrentTime(0);
       }
-    }, [isRestart])
+    }, [isRestart, setCurrentTime])
     
 
     return (
         <Panel>
             <Timer
-                currentTime={currentTime}
+              currentTime={currentTimerId === timer.id ? currentTime : 0}
             />
         </Panel>
     );

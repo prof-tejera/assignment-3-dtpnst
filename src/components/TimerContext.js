@@ -12,7 +12,9 @@ export const TimerProvider = ({ children }) => {
   const [currentIndex, setCurrentIndex] = useState(storedState?.currentIndex ?? 0);
   const [isWorkoutRunning, setIsWorkoutRunning] = useState(storedState?.isWorkoutRunning ?? false);
   const [isRestart, setIsRestart] = useState(storedState?.isRestart ?? false);
-
+  const [currentTime, setCurrentTime] = useState(storedState?.currentTime ?? 0);
+  const [currentRound, setCurrentRound] = useState(storedState?.currentRound ?? 0);
+  const [isRest, setIsRest] = useState(storedState?.isRest ?? false);
 
   const addTimer = timer => {
     setTimers(prevTimers => {
@@ -40,7 +42,14 @@ export const TimerProvider = ({ children }) => {
       restart();
     } else {
       setCurrentTimerId(timers[currentIndex+1].id);
+      if(timers[currentIndex+1].type === 'Countdown') {
+        setCurrentTime(timers[currentIndex+1].duration);
+      } else {
+        setCurrentTime(0);
+      }
       setCurrentIndex(prevIndex => prevIndex + 1);
+      setCurrentRound(0);
+      setIsRest(true);
     }
   }
   const restart = () => {
@@ -48,6 +57,9 @@ export const TimerProvider = ({ children }) => {
     setCurrentTimerId(timers[0].id);
     setIsWorkoutRunning(false);
     setIsRestart(true);
+    setCurrentTime(0);
+    setCurrentRound(0);
+    setIsRest(true);
   }
   const startStop = () => {
     setIsRestart(false);
@@ -61,15 +73,18 @@ export const TimerProvider = ({ children }) => {
           currentIndex,
           isWorkoutRunning,
           isRestart,
+          currentTime,
+          currentRound,
+          isRest,
         }));
-      }, 2000);
+      }, 500);
 
       return () => clearInterval(intervalId);
 
-  }, [currentTimerId, currentIndex, isWorkoutRunning, isRestart]);
+  }, [currentTimerId, currentIndex, isWorkoutRunning, isRestart, currentTime, currentRound, isRest]);
 
   return (
-    <TimerContext.Provider value={{ timers, currentTimerId, currentIndex, isWorkoutRunning, isRestart, addTimer, removeTimer, fastForward, restart, startStop }}>
+    <TimerContext.Provider value={{ timers, currentTimerId, currentIndex, isWorkoutRunning, isRestart, addTimer, removeTimer, fastForward, restart, startStop, currentTime, setCurrentTime, currentRound, setCurrentRound, isRest, setIsRest }}>
       {children}
     </TimerContext.Provider>
   );

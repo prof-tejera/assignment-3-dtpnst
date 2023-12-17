@@ -5,11 +5,9 @@ import Timer from "../generic/Timer";
 import { useTimerContext } from "../TimerContext";
 
 const XY = (timer) => {
-    const { currentTimerId, isWorkoutRunning, fastForward, isRestart } = useTimerContext();
-    const [currentTime, setCurrentTime] = useState(0); 
+    const { currentTimerId, isWorkoutRunning, fastForward, isRestart, currentTime, setCurrentTime, currentRound, setCurrentRound } = useTimerContext();
     const [countdownAmount] = useState(timer.duration);
     const [numRounds] = useState(timer.numRounds);
-    const [currentRound, setCurrentRound] = useState(0);
 
 
     useEffect(() => {
@@ -30,20 +28,20 @@ const XY = (timer) => {
         }
 
         return () => clearInterval(timerInterval);
-    }, [timer, isWorkoutRunning, currentTimerId, fastForward, currentTime, countdownAmount, currentRound, numRounds]);
+    }, [timer, isWorkoutRunning, currentTimerId, fastForward, currentTime, countdownAmount, currentRound, numRounds, setCurrentRound, setCurrentTime]);
 
     useEffect(() => {
         if(isRestart) {
             setCurrentTime(0);
             setCurrentRound(0)
         }
-    }, [isRestart])
+    }, [isRestart, setCurrentTime, setCurrentRound])
 
     return (
         <Panel>
-            <Timer 
-                currentTime={currentTime}
-                currentRound={currentRound}
+            <Timer
+              currentTime={currentTimerId === timer.id ? currentTime : 0}
+              currentRound={currentTimerId === timer.id ? currentRound : 0}
             />
         </Panel>
     );
