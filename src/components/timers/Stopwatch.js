@@ -5,7 +5,7 @@ import Timer from "../generic/Timer";
 import { useTimerContext } from "../TimerContext";
 
 const Stopwatch = (timer) => {
-    const { currentTimerId, isWorkoutRunning, fastForward, isRestart, currentTime, setCurrentTime } = useTimerContext();
+    const { currentTimerId, isWorkoutRunning, fastForward, isRestart, currentTime, setCurrentTime, setTotalTime } = useTimerContext();
     const [endTime] = useState(timer.duration);
 
     useEffect(() => {
@@ -13,7 +13,8 @@ const Stopwatch = (timer) => {
         if (isWorkoutRunning && currentTimerId === timer.id) {
           if (currentTime < endTime) {
             timerInterval = setInterval(() => {
-              setCurrentTime((prevTime) => prevTime + 1); 
+              setCurrentTime((prevTime) => prevTime + 1);
+              setTotalTime(prevTotalTime => prevTotalTime - 1);
             }, 1000);
           } else {
             fastForward();
@@ -23,7 +24,7 @@ const Stopwatch = (timer) => {
         }
     
         return () => clearInterval(timerInterval);
-      }, [timer, isWorkoutRunning, currentTimerId, fastForward, currentTime, endTime, setCurrentTime]);
+      }, [timer, isWorkoutRunning, currentTimerId, fastForward, currentTime, endTime, setCurrentTime, setTotalTime]);
 
     useEffect(() => {
       if(isRestart) {

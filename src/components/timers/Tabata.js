@@ -5,7 +5,7 @@ import Timer from "../generic/Timer";
 import { useTimerContext } from "../TimerContext";
 
 const Tabata = (timer) => {
-    const { currentTimerId, isWorkoutRunning, fastForward, isRestart, currentTime, setCurrentTime, currentRound, setCurrentRound, isRest, setIsRest } = useTimerContext();
+    const { currentTimerId, isWorkoutRunning, fastForward, isRestart, currentTime, setCurrentTime, currentRound, setCurrentRound, isRest, setIsRest, setTotalTime } = useTimerContext();
     const [workTime] = useState(timer.duration);
     const [restTime] = useState(timer.restTime);
     const [numRounds] = useState(timer.numRounds);
@@ -17,6 +17,7 @@ const Tabata = (timer) => {
           if (currentTime > 0) {
             timerInterval = setInterval(() => {
               setCurrentTime((prevTime) => prevTime - 1);
+              setTotalTime(prevTotalTime => prevTotalTime - 1);
             }, 1000);
           } else if (currentRound < numRounds) {
             if (isRest) {
@@ -38,7 +39,7 @@ const Tabata = (timer) => {
         }
       
         return () => clearInterval(timerInterval);
-      }, [timer, isWorkoutRunning, currentTimerId, fastForward, currentTime, workTime, restTime, currentRound, numRounds, isRest, setCurrentTime, setCurrentRound, setIsRest]);
+      }, [timer, isWorkoutRunning, currentTimerId, fastForward, currentTime, workTime, restTime, currentRound, numRounds, isRest, setCurrentTime, setCurrentRound, setIsRest, setTotalTime]);
 
     useEffect(() => {
       if(isRestart) {

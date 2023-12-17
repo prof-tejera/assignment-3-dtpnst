@@ -15,11 +15,22 @@ export const TimerProvider = ({ children }) => {
   const [currentTime, setCurrentTime] = useState(storedState?.currentTime ?? 0);
   const [currentRound, setCurrentRound] = useState(storedState?.currentRound ?? 0);
   const [isRest, setIsRest] = useState(storedState?.isRest ?? false);
+  const [totalTime, setTotalTime] = useState(storedState?.totalTime ?? 0);
 
   const addTimer = timer => {
     setTimers(prevTimers => {
       const updatedTimers = [...prevTimers, timer];
       localStorage.setItem('timers', JSON.stringify(updatedTimers));
+
+      if(timer.type === 'XY') {
+        setTotalTime(prevTime => prevTime + (timer.duration * timer.numRounds));
+      } else if(timer.type === 'Tabata') {
+        setTotalTime(prevTime => prevTime + ((timer.duration + timer.restTime) * timer.numRounds));
+      } else {
+        setTotalTime(prevTime => prevTime + timer.duration);
+      }
+
+
       return updatedTimers;
     });
     if(currentTimerId === null && timers.length === 0) {
@@ -27,12 +38,22 @@ export const TimerProvider = ({ children }) => {
     }
   }
   const removeTimer = timerId => {
-    if(currentTimerId === timerId) {
+    if(currentTimerId === timerId && timers.length > 1) {
       fastForward();
     }
     setTimers(prevTimers => {
+      const timerToRemove = prevTimers.find(timer => timer.id === timerId);
       const updatedTimers = prevTimers.filter(timer => timer.id !== timerId);
       localStorage.setItem('timers', JSON.stringify(updatedTimers));
+
+      if(timerToRemove.type === 'XY') {
+        setTotalTime(prevTime => prevTime - (timerToRemove.duration * timerToRemove.numRounds));
+      } else if(timerToRemove.type === 'Tabata') {
+        setTotalTime(prevTime => prevTime - ((timerToRemove.duration + timerToRemove.restTime) * timerToRemove.numRounds));
+      } else {
+        setTotalTime(prevTime => prevTime - timerToRemove.duration);
+      }
+
       return updatedTimers;
     });
 
@@ -48,9 +69,19 @@ export const TimerProvider = ({ children }) => {
       const newTimers = [...prevTimers];
       newTimers[timerIndex] = updatedTimer;
 
+      if(updatedTimer.type === 'XY') {
+        const timeDifference =  (updatedTimer.duration * updatedTimer.numRounds) - (prevTimers[timerIndex].duration * prevTimers[timerIndex].numRounds);
+        setTotalTime(prevTime => prevTime + timeDifference);
+      } else if(updatedTimer.type === 'Tabata') {
+        const timeDifference = ((updatedTimer.duration + updatedTimer.restTime) * updatedTimer.numRounds) - ((prevTimers[timerIndex].duration + prevTimers[timerIndex].restTime) * prevTimers[timerIndex].numRounds)
+        setTotalTime(prevTime => prevTime + timeDifference);
+      } else {
+        const timeDifference = updatedTimer.duration - prevTimers[timerIndex].duration;
+        setTotalTime(prevTime => prevTime + timeDifference);
+      }
+
       localStorage.setItem('timers', JSON.stringify(newTimers));
 
-      // Return the new timers array
       return newTimers;
     });
   };
@@ -118,6 +149,7 @@ export const TimerProvider = ({ children }) => {
     setCurrentTime(0);
     setCurrentRound(0);
     setIsRest(true);
+    restartTotalTime();
   }
   const startStop = () => {
     if(!isWorkoutRunning && timers[currentIndex].type === 'Countdown') {
@@ -127,6 +159,19 @@ export const TimerProvider = ({ children }) => {
     setIsRestart(false);
     setIsWorkoutRunning(!isWorkoutRunning);
   }
+
+  const restartTotalTime = () => {
+    const total = timers.reduce((sum, timer) => {
+      if (timer.type === 'XY') {
+        return sum + (timer.duration * timer.numRounds);
+      } else if (timer.type === 'Tabata') {
+        return sum + ((timer.duration + timer.restTime) * timer.numRounds);
+      } else {
+        return sum + timer.duration;
+      }
+    }, 0);
+    setTotalTime(total);
+  };
 
   useEffect(() => {
       const intervalId = setInterval(() => {
@@ -138,17 +183,18 @@ export const TimerProvider = ({ children }) => {
           currentTime,
           currentRound,
           isRest,
+          totalTime,
         }));
       }, 500);
 
       return () => clearInterval(intervalId);
 
-  }, [currentTimerId, currentIndex, isWorkoutRunning, isRestart, currentTime, currentRound, isRest]);
+  }, [currentTimerId, currentIndex, isWorkoutRunning, isRestart, currentTime, currentRound, isRest, totalTime]);
 
   return (
     <TimerContext.Provider value={{ timers, currentTimerId, currentIndex, isWorkoutRunning, isRestart,
       addTimer, removeTimer, fastForward, restart, startStop, currentTime, setCurrentTime, currentRound,
-      setCurrentRound, isRest, setIsRest, updateTimer, moveTimerUp, moveTimerDown }}>
+      setCurrentRound, isRest, setIsRest, updateTimer, moveTimerUp, moveTimerDown, totalTime, setTotalTime }}>
       {children}
     </TimerContext.Provider>
   );

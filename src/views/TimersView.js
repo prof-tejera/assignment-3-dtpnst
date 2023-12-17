@@ -8,6 +8,7 @@ import { useTimerContext } from "../components/TimerContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faForward, faPause, faPlay, faRotateLeft, faXmark, faPenToSquare, faAngleUp, faAngleDown } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
+import { formatDuration } from "../utils/helpers";
 
 const Timers = styled.div`
   display: flex;
@@ -77,7 +78,7 @@ const buttonContainerStyle = {
 
 const TimersView = () => {
   const navigate = useNavigate();
-  const { timers, currentTimerId, startStop, fastForward, removeTimer, isWorkoutRunning, restart, moveTimerUp, moveTimerDown } = useTimerContext();
+  const { timers, currentTimerId, startStop, fastForward, removeTimer, isWorkoutRunning, restart, moveTimerUp, moveTimerDown, totalTime } = useTimerContext();
 
   const handleStartStopClick = () => {
     startStop();
@@ -109,6 +110,7 @@ const TimersView = () => {
 
   return (
     <Timers>
+      <div>Total Workout Time: {formatDuration(totalTime)}</div>
       <div style={buttonContainerStyle}>
         <FontAwesomeIcon icon={isWorkoutRunning ? faPause : faPlay} style={buttonStyle} onClick={handleStartStopClick}/>
         <FontAwesomeIcon icon={faRotateLeft} style={resetButtonStyle} onClick={handleResetClick}/>

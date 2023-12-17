@@ -5,7 +5,7 @@ import Timer from "../generic/Timer";
 import { useTimerContext } from "../TimerContext";
 
 const XY = (timer) => {
-    const { currentTimerId, isWorkoutRunning, fastForward, isRestart, currentTime, setCurrentTime, currentRound, setCurrentRound } = useTimerContext();
+    const { currentTimerId, isWorkoutRunning, fastForward, isRestart, currentTime, setCurrentTime, currentRound, setCurrentRound, setTotalTime } = useTimerContext();
     const [countdownAmount] = useState(timer.duration);
     const [numRounds] = useState(timer.numRounds);
 
@@ -16,6 +16,7 @@ const XY = (timer) => {
             if (currentTime > 0) {
                 timerInterval = setInterval(() => {
                     setCurrentTime((prevTime) => prevTime - 1);
+                    setTotalTime(prevTotalTime => prevTotalTime - 1);
                 }, 1000);
             } else if (currentRound < numRounds) {
                 setCurrentTime(countdownAmount);
@@ -28,7 +29,7 @@ const XY = (timer) => {
         }
 
         return () => clearInterval(timerInterval);
-    }, [timer, isWorkoutRunning, currentTimerId, fastForward, currentTime, countdownAmount, currentRound, numRounds, setCurrentRound, setCurrentTime]);
+    }, [timer, isWorkoutRunning, currentTimerId, fastForward, currentTime, countdownAmount, currentRound, numRounds, setCurrentRound, setCurrentTime, setTotalTime]);
 
     useEffect(() => {
         if(isRestart) {
