@@ -1,18 +1,16 @@
 export default class Duration {
-    constructor(hours, minutes, seconds) {
-        this.hours = hours;
+    constructor(minutes, seconds) {
         this.minutes = minutes;
         this.seconds = seconds;
-    }
-
-    getTotalSeconds() {
-        return this.hours * 3600 + this.minutes * 60 + this.seconds;
+        this.totalSeconds = minutes * 60 + seconds;
     }
 
     formatDuration() {
-        const formattedHours = String(Math.floor(this.hours)).padStart(2, '0');
-        const formattedMinutes = String(Math.floor(this.minutes)).padStart(2, '0');
-        const formattedSeconds = String(Math.floor(this.seconds)).padStart(2, '0');
-        return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
-      }
+        const minutes = Math.floor((this.totalSeconds % 3600) / 60);
+        const seconds = this.totalSeconds % 60;
+
+        const formattedMinutes = String(minutes).padStart(2, '0');
+        const formattedSeconds = String(seconds).padStart(2, '0');
+        return `${formattedMinutes}:${formattedSeconds}`;
+    }
 }

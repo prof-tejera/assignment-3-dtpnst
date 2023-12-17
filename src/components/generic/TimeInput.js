@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
+import { getMinutes, getSeconds, getTotalSeconds } from "../../utils/helpers";
 
 const TimeInputContainer = styled.div`
       padding: 5px;
@@ -28,60 +29,53 @@ const TimeInputContainer = styled.div`
       }
     `;
 
-const TimeInput = ({ label, duration, onTimeChange }) => {
-    
+const TimeInput = ({ label, durationSeconds, onTimeChange }) => {
+    const [minutes, setMinutes] = useState(getMinutes(durationSeconds));
+    const [seconds, setSeconds] = useState(getSeconds(durationSeconds));
+
     const handleInputChange = (event) => {
         const { name, value } = event.target;
         const numericValue = value === '' ? 0 : parseInt(value, 10);
-        onTimeChange({ ...duration, [name]: isNaN(numericValue) ? 0 : numericValue });
-    };
-    
-    
 
+         if (name === 'minutes') {
+            setMinutes(numericValue);
+           onTimeChange(getTotalSeconds(numericValue, seconds));
+        } else if (name === 'seconds') {
+            setSeconds(numericValue);
+           onTimeChange(getTotalSeconds(minutes, numericValue));
+        }
+
+
+    };
 
     return (
       <TimeInputContainer>
-        <span>{label}</span>
-        <label>
-            Hours
-            <input
+          <span>{label}</span>
+          <label>
+              Minutes
+              <input
                 type="number"
                 min="0"
-                max="24"
-                name="hours"
-                value={duration.hours}
+                max="59"
+                name="minutes"
+                value={minutes}
                 onChange={handleInputChange}
-                />
-        </label>
-        
-        <label>
-            Minutes
-    
-        <input
-          type="number"
-          min="0"
-          max="59"
-          name="minutes"
-          value={duration.minutes}
-          onChange={handleInputChange}
-        />
-        </label>
-        <label>
-            Seconds
-            <input
-          type="number"
-          min="0"
-          max="59"
-          name="seconds"
-          value={duration.seconds}
-          onChange={handleInputChange}
-        />
-        </label>
-       
-        
+              />
+          </label>
+
+          <label>
+              Seconds
+              <input
+                type="number"
+                min="0"
+                max="59"
+                name="seconds"
+                value={seconds}
+                onChange={handleInputChange}
+              />
+          </label>
       </TimeInputContainer>
     );
-  };
-
+};
 
 export default TimeInput;

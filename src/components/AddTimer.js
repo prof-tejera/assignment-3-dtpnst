@@ -2,29 +2,43 @@ import React, { useState } from 'react';
 import { useTimerContext } from './TimerContext';
 import TimeInput from "./generic/TimeInput";
 import Input from "./generic/Input";
-import Duration from "./generic/Duration";
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const AddTimer = () => {
   const { addTimer } = useTimerContext();
-  const [timerType, setTimerType] = useState('Stopwatch');
-  const [duration, setDuration] = useState(new Duration(0, 0, 0));
-  const [restTime, setRestTime] = useState(new Duration(0, 0, 0));
-  const [numRounds, setNumRounds] = useState(0);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+
+  const [timerType, setTimerType] = useState(params.get('timerType') ?? 'Stopwatch');
+  const [duration, setDuration] = useState(params.get('duration') ?? 0);
+  const [restTime, setRestTime] = useState(params.get('restTime') ?? 0);
+  const [numRounds, setNumRounds] = useState(params.get('numRounds') ?? 0);
+
 
   const handleAddTimer = () => {
 
       const newTimer = {
         id: new Date().getTime(),
         type: timerType,
-        duration,
-        restTime,
+        duration: duration,
+        restTime: restTime,
         numRounds,
       };
       console.log(newTimer);
       addTimer(newTimer);
-      setDuration(new Duration(0, 0, 0));
-      setRestTime(new Duration(0, 0, 0));
+      setDuration(0);
+      setRestTime(0);
       setNumRounds(0);
+
+    const query = new URLSearchParams({
+      timerType,
+      duration: duration,
+      restTime: restTime,
+      numRounds,
+    }).toString();
+
+    navigate(`${location.pathname}?${query}`);
 
   };
 
@@ -43,21 +57,21 @@ const AddTimer = () => {
 
       {/* Additional properties based on timer type */}
       {timerType === 'Stopwatch' && (
-        <TimeInput label="Time" duration={duration} onTimeChange={(newTime) => setDuration(new Duration(newTime.hours, newTime.minutes, newTime.seconds))} />
+        <TimeInput label="Time" duration={duration} onTimeChange={(newTime) => setDuration(newTime)} />
       )}
       {timerType === 'Countdown' && (
-        <TimeInput label="Time" duration={duration} onTimeChange={(newTime) => setDuration(new Duration(newTime.hours, newTime.minutes, newTime.seconds))} />
+        <TimeInput label="Time" duration={duration} onTimeChange={(newTime) => setDuration(newTime)} />
       )}
       {timerType === 'XY' && (
         <>
-          <TimeInput label="Time Per Round" duration={duration} onTimeChange={(newTime) => setDuration(new Duration(newTime.hours, newTime.minutes, newTime.seconds))} />
+          <TimeInput label="Time Per Round" duration={duration} onTimeChange={(newTime) => setDuration(newTime)} />
           <Input label="# of Rounds" type="number" min="0" onChange={(e) => setNumRounds(e.target.value)} />
         </>
       )}
       {timerType === 'Tabata' && (
         <>
-          <TimeInput label="Work Time" duration={duration} onTimeChange={(newTime) => setDuration(new Duration(newTime.hours, newTime.minutes, newTime.seconds))} />
-          <TimeInput label="Rest Time" duration={restTime} onTimeChange={(newTime) => setRestTime(new Duration(newTime.hours, newTime.minutes, newTime.seconds))} />
+          <TimeInput label="Work Time" duration={duration} onTimeChange={(newTime) => setDuration(newTime)} />
+          <TimeInput label="Rest Time" duration={restTime} onTimeChange={(newTime) => setRestTime(newTime)} />
           <Input label="# of Rounds" type="number" min="0" onChange={(e) => setNumRounds(e.target.value)} />
         </>
       )}

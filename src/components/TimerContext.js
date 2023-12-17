@@ -1,13 +1,16 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 const TimerContext = createContext();
 
 export const TimerProvider = ({ children }) => {
   const [timers, setTimers] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [currentTimerId, setCurrentTimerId] = useState(null);
-  const [isWorkoutRunning, setIsWorkoutRunning] = useState(false);
-  const [isRestart, setIsRestart] = useState(false);
+  const storedState = JSON.parse(localStorage.getItem('runningState'));
+
+  const [currentTimerId, setCurrentTimerId] = useState(storedState?.currentTimerId ?? null);
+  const [currentIndex, setCurrentIndex] = useState(storedState?.currentIndex ?? 0);
+  const [isWorkoutRunning, setIsWorkoutRunning] = useState(storedState?.isWorkoutRunning ?? false);
+  const [isRestart, setIsRestart] = useState(storedState?.isRestart ?? false);
+
 
   const addTimer = timer => {
     setTimers(prevTimers => [...prevTimers, timer]);
@@ -41,6 +44,20 @@ export const TimerProvider = ({ children }) => {
     setIsWorkoutRunning(!isWorkoutRunning);
   }
 
+  useEffect(() => {
+    if (isWorkoutRunning) {
+      const intervalId = setInterval(() => {
+        localStorage.setItem('runningState', JSON.stringify({
+          currentTimerId,
+          currentIndex,
+          isWorkoutRunning,
+          isRestart,
+        }));
+      }, 2000);
+
+      return () => clearInterval(intervalId);
+    }
+  }, [currentTimerId, currentIndex, isWorkoutRunning, isRestart]);
 
   return (
     <TimerContext.Provider value={{ timers, currentTimerId, currentIndex, isWorkoutRunning, isRestart, addTimer, removeTimer, fastForward, restart, startStop }}>

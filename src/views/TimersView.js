@@ -107,27 +107,27 @@ const TimersView = () => {
           {timer.type === "Countdown" && (
             <Countdown
               id={timer.id}
-              duration={timer.duration.getTotalSeconds()}
+              duration={timer.duration}
             />
           )}
           {timer.type === "Stopwatch" && (
             <Stopwatch
               id={timer.id}
-              duration={timer.duration.getTotalSeconds()}
+              duration={timer.duration}
             />
           )}
           {timer.type === "Tabata" && (
             <Tabata
               id={timer.id}
-              duration={timer.duration.getTotalSeconds()}
-              restTime={timer.restTime.getTotalSeconds()}
+              duration={timer.duration}
+              restTime={timer.restTime}
               numRounds={timer.numRounds}
             />
           )}
           {timer.type === "XY" && (
             <XY
               id={timer.id}
-              duration={timer.duration.getTotalSeconds()}
+              duration={timer.duration}
               numRounds={timer.numRounds}
             />
           )}
