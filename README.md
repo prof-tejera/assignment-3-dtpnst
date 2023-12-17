@@ -48,7 +48,7 @@ We will be grading based on the features listed above and overall code quality
 - DRY and overall code quality (20pt)
 
 ### Deployment Instructions (GH actions)
-
+https://prof-tejera.github.io/assignment-3-dtpnst
 [Deployment instructions](https://github.com/prof-tejera/react-deployment-code#github-actions)
 
 ## Bonus
