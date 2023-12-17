@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { useTimerContext } from './TimerContext';
 import TimeInput from "./generic/TimeInput";
 import Input from "./generic/Input";
-import { useNavigate, useLocation } from 'react-router-dom';
+import {  useLocation } from 'react-router-dom';
 
 const AddTimer = () => {
   const { addTimer } = useTimerContext();
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
   const location = useLocation();
   const params = new URLSearchParams(location.search);
 
@@ -30,7 +30,7 @@ const AddTimer = () => {
       setDuration(0);
       setRestTime(0);
       setNumRounds(0);
-
+/*
     const query = new URLSearchParams({
       timerType,
       duration: duration,
@@ -39,7 +39,7 @@ const AddTimer = () => {
     }).toString();
 
     navigate(`${location.pathname}?${query}`);
-
+*/
   };
 
   return (

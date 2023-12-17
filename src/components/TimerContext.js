@@ -3,9 +3,11 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 const TimerContext = createContext();
 
 export const TimerProvider = ({ children }) => {
-  const [timers, setTimers] = useState([]);
-  const storedState = JSON.parse(localStorage.getItem('runningState'));
 
+  const storedState = JSON.parse(localStorage.getItem('runningState'));
+  const storedTimers = JSON.parse(localStorage.getItem('timers'));
+
+  const [timers, setTimers] = useState(storedTimers ?? []);
   const [currentTimerId, setCurrentTimerId] = useState(storedState?.currentTimerId ?? null);
   const [currentIndex, setCurrentIndex] = useState(storedState?.currentIndex ?? 0);
   const [isWorkoutRunning, setIsWorkoutRunning] = useState(storedState?.isWorkoutRunning ?? false);
@@ -13,7 +15,11 @@ export const TimerProvider = ({ children }) => {
 
 
   const addTimer = timer => {
-    setTimers(prevTimers => [...prevTimers, timer]);
+    setTimers(prevTimers => {
+      const updatedTimers = [...prevTimers, timer];
+      localStorage.setItem('timers', JSON.stringify(updatedTimers));
+      return updatedTimers;
+    });
     if(currentTimerId === null && timers.length === 0) {
       setCurrentTimerId(timer.id);
     }
@@ -22,7 +28,11 @@ export const TimerProvider = ({ children }) => {
     if(currentTimerId === timerId) {
       fastForward();
     }
-    setTimers(prevTimers => prevTimers.filter(timer => timer.id !== timerId));
+    setTimers(prevTimers => {
+      const updatedTimers = prevTimers.filter(timer => timer.id !== timerId);
+      localStorage.setItem('timers', JSON.stringify(updatedTimers));
+      return updatedTimers;
+    });
 
   }
   const fastForward = () => {
@@ -45,7 +55,6 @@ export const TimerProvider = ({ children }) => {
   }
 
   useEffect(() => {
-    if (isWorkoutRunning) {
       const intervalId = setInterval(() => {
         localStorage.setItem('runningState', JSON.stringify({
           currentTimerId,
@@ -56,7 +65,7 @@ export const TimerProvider = ({ children }) => {
       }, 2000);
 
       return () => clearInterval(intervalId);
-    }
+
   }, [currentTimerId, currentIndex, isWorkoutRunning, isRestart]);
 
   return (
