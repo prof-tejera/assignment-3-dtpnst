@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useTimerContext } from './TimerContext';
 import TimeInput from "./generic/TimeInput";
 import Input from "./generic/Input";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const EditTimer = () => {
   const { timerId } = useParams();
+  const navigate = useNavigate();
   const { timers, updateTimer } = useTimerContext();
 
   const timerToEdit = timers.find(timer => timer.id === Number(timerId));
@@ -27,6 +28,7 @@ const EditTimer = () => {
     };
 
     updateTimer(updatedTimer);
+    navigate(`/`);
   };
 
   useEffect(() => {
@@ -59,14 +61,14 @@ const EditTimer = () => {
       {timerType === 'XY' && (
         <>
           <TimeInput label="Time Per Round" durationSeconds={duration} onTimeChange={(newTime) => setDuration(newTime)} />
-          <Input label="# of Rounds" type="number" min="0" onChange={(e) => setNumRounds(e.target.value)} />
+          <Input label="# of Rounds" type="number" min="0" value={numRounds} onChange={(e) => setNumRounds(e.target.value)} />
         </>
       )}
       {timerType === 'Tabata' && (
         <>
           <TimeInput label="Work Time" durationSeconds={duration} onTimeChange={(newTime) => setDuration(newTime)} />
           <TimeInput label="Rest Time" durationSeconds={restTime} onTimeChange={(newTime) => setRestTime(newTime)} />
-          <Input label="# of Rounds" type="number" min="0" onChange={(e) => setNumRounds(e.target.value)} />
+          <Input label="# of Rounds" type="number" min="0" value={numRounds} onChange={(e) => setNumRounds(e.target.value)} />
         </>
       )}
 
