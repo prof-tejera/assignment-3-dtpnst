@@ -42,21 +42,58 @@ export const TimerProvider = ({ children }) => {
     setTimers(prevTimers => {
       const timerIndex = prevTimers.findIndex(timer => timer.id === updatedTimer.id);
       if (timerIndex === -1) {
-        // Timer not found, return the previous state
         return prevTimers;
       }
 
-      // Replace the timer at timerIndex with updatedTimer
       const newTimers = [...prevTimers];
       newTimers[timerIndex] = updatedTimer;
 
-      // Update local storage
       localStorage.setItem('timers', JSON.stringify(newTimers));
 
       // Return the new timers array
       return newTimers;
     });
   };
+
+  const moveTimerUp = timerId => {
+    setTimers(prevTimers => {
+      const timerIndex = prevTimers.findIndex(timer => timer.id === timerId);
+      if (timerIndex <= 0) {
+        return prevTimers;
+      }
+
+      const newTimers = [...prevTimers];
+      [newTimers[timerIndex - 1], newTimers[timerIndex]] = [newTimers[timerIndex], newTimers[timerIndex - 1]];
+
+      localStorage.setItem('timers', JSON.stringify(newTimers));
+
+      if (timerId === currentTimerId) {
+        setCurrentIndex(timerIndex - 1);
+      }
+
+      return newTimers;
+    });
+  }
+
+  const moveTimerDown = timerId => {
+    setTimers(prevTimers => {
+      const timerIndex = prevTimers.findIndex(timer => timer.id === timerId);
+      if (timerIndex < 0 || timerIndex === prevTimers.length - 1) {
+        return prevTimers;
+      }
+
+      const newTimers = [...prevTimers];
+      [newTimers[timerIndex + 1], newTimers[timerIndex]] = [newTimers[timerIndex], newTimers[timerIndex + 1]];
+
+      localStorage.setItem('timers', JSON.stringify(newTimers));
+
+      if (timerId === currentTimerId) {
+        setCurrentIndex(timerIndex + 1);
+      }
+
+      return newTimers;
+    });
+  }
 
   const fastForward = () => {
     if(currentIndex === timers.length - 1) {
@@ -83,6 +120,10 @@ export const TimerProvider = ({ children }) => {
     setIsRest(true);
   }
   const startStop = () => {
+    if(!isWorkoutRunning && timers[currentIndex].type === 'Countdown') {
+      setCurrentTime(timers[currentIndex].duration);
+    }
+
     setIsRestart(false);
     setIsWorkoutRunning(!isWorkoutRunning);
   }
@@ -105,7 +146,9 @@ export const TimerProvider = ({ children }) => {
   }, [currentTimerId, currentIndex, isWorkoutRunning, isRestart, currentTime, currentRound, isRest]);
 
   return (
-    <TimerContext.Provider value={{ timers, currentTimerId, currentIndex, isWorkoutRunning, isRestart, addTimer, removeTimer, fastForward, restart, startStop, currentTime, setCurrentTime, currentRound, setCurrentRound, isRest, setIsRest, updateTimer }}>
+    <TimerContext.Provider value={{ timers, currentTimerId, currentIndex, isWorkoutRunning, isRestart,
+      addTimer, removeTimer, fastForward, restart, startStop, currentTime, setCurrentTime, currentRound,
+      setCurrentRound, isRest, setIsRest, updateTimer, moveTimerUp, moveTimerDown }}>
       {children}
     </TimerContext.Provider>
   );

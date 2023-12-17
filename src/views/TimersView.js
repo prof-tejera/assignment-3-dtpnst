@@ -6,7 +6,7 @@ import XY from "../components/timers/XY";
 import Tabata from "../components/timers/Tabata";
 import { useTimerContext } from "../components/TimerContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faForward, faPause, faPlay, faRotateLeft, faXmark, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
+import { faForward, faPause, faPlay, faRotateLeft, faXmark, faPenToSquare, faAngleUp, faAngleDown } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 
 const Timers = styled.div`
@@ -77,7 +77,7 @@ const buttonContainerStyle = {
 
 const TimersView = () => {
   const navigate = useNavigate();
-  const { timers, currentTimerId, startStop, fastForward, removeTimer, isWorkoutRunning, restart } = useTimerContext();
+  const { timers, currentTimerId, startStop, fastForward, removeTimer, isWorkoutRunning, restart, moveTimerUp, moveTimerDown } = useTimerContext();
 
   const handleStartStopClick = () => {
     startStop();
@@ -99,6 +99,14 @@ const TimersView = () => {
     navigate(`/edit/${timerId}`);
   }
 
+  const handleMoveTimerUp = (timerId) => {
+    moveTimerUp(timerId);
+  }
+
+  const handleMoveTimerDown = (timerId) => {
+    moveTimerDown(timerId);
+  }
+
   return (
     <Timers>
       <div style={buttonContainerStyle}>
@@ -110,6 +118,8 @@ const TimersView = () => {
         <Timer key={timer.id} className={(timer.id === currentTimerId) ? 'runningTimer' : 'notRunningTimer'}>
           <TimerTitle>#{index+1} {timer.type}</TimerTitle>
           <FontAwesomeIcon icon={faPenToSquare} style={buttonStyle} onClick={() => handleEditTimer(timer.id)} />
+          <FontAwesomeIcon icon={faAngleUp} style={buttonStyle} onClick={() => handleMoveTimerUp(timer.id)} />
+          <FontAwesomeIcon icon={faAngleDown} style={buttonStyle} onClick={() => handleMoveTimerDown(timer.id)} />
           <FontAwesomeIcon icon={faXmark} style={removeButtonStyle} onClick={() => handleRemoveTimer(timer.id)} />
           {timer.type === "Countdown" && (
             <Countdown
