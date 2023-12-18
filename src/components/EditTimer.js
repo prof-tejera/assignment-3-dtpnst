@@ -11,7 +11,9 @@ const EditTimer = () => {
 
   const timerToEdit = timers.find(timer => timer.id === Number(timerId));
 
-  // TODO: Add error if timer not found and redirect to home page
+  if (!timerToEdit) {
+    throw new Error('Timer not found');
+  }
 
   const [timerType, setTimerType] = useState(timerToEdit.type);
   const [duration, setDuration] = useState(timerToEdit.duration);
