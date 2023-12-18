@@ -40,19 +40,23 @@ export const TimerProvider = ({ children }) => {
   const removeTimer = timerId => {
     if(currentTimerId === timerId && timers.length > 1) {
       fastForward();
+      setCurrentIndex(prevIndex => prevIndex - 1);
     }
+
+    const timerToRemove = timers.find(timer => timer.id === timerId);
+
+    if(timerToRemove.type === 'XY') {
+      setTotalTime(prevTime => prevTime - (timerToRemove.duration * timerToRemove.numRounds));
+    } else if(timerToRemove.type === 'Tabata') {
+      setTotalTime(prevTime => prevTime - ((timerToRemove.duration + timerToRemove.restTime) * timerToRemove.numRounds));
+    } else {
+      setTotalTime(prevTime => prevTime - timerToRemove.duration);
+    }
+
     setTimers(prevTimers => {
-      const timerToRemove = prevTimers.find(timer => timer.id === timerId);
+
       const updatedTimers = prevTimers.filter(timer => timer.id !== timerId);
       localStorage.setItem('timers', JSON.stringify(updatedTimers));
-
-      if(timerToRemove.type === 'XY') {
-        setTotalTime(prevTime => prevTime - (timerToRemove.duration * timerToRemove.numRounds));
-      } else if(timerToRemove.type === 'Tabata') {
-        setTotalTime(prevTime => prevTime - ((timerToRemove.duration + timerToRemove.restTime) * timerToRemove.numRounds));
-      } else {
-        setTotalTime(prevTime => prevTime - timerToRemove.duration);
-      }
 
       return updatedTimers;
     });
@@ -143,13 +147,20 @@ export const TimerProvider = ({ children }) => {
   }
   const restart = () => {
     setCurrentIndex(0);
-    setCurrentTimerId(timers[0].id);
+
     setIsWorkoutRunning(false);
     setIsRestart(true);
     setCurrentTime(0);
     setCurrentRound(0);
     setIsRest(true);
     restartTotalTime();
+
+    if(timers.length > 0) {
+      setCurrentTimerId(timers[0].id);
+    } else {
+      setCurrentTimerId(null);
+    }
+
   }
   const startStop = () => {
     if(!isWorkoutRunning && timers[currentIndex].type === 'Countdown') {

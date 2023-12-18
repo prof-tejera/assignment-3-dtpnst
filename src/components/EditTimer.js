@@ -17,6 +17,7 @@ const EditTimer = () => {
   const [duration, setDuration] = useState(timerToEdit.duration);
   const [restTime, setRestTime] = useState(timerToEdit.restTime);
   const [numRounds, setNumRounds] = useState(timerToEdit.numRounds);
+  const [description, setDescription] = useState(timerToEdit.description);
 
   const handleUpdateTimer = () => {
     const updatedTimer = {
@@ -25,6 +26,7 @@ const EditTimer = () => {
       duration: duration,
       restTime: restTime,
       numRounds,
+      description
     };
 
     updateTimer(updatedTimer);
@@ -36,6 +38,7 @@ const EditTimer = () => {
     setDuration(timerToEdit.duration);
     setRestTime(timerToEdit.restTime);
     setNumRounds(timerToEdit.numRounds);
+    setDescription(timerToEdit.description);
   }, [timerToEdit]);
 
   return (
@@ -50,6 +53,8 @@ const EditTimer = () => {
           <option value="Tabata">Tabata</option>
         </select>
       </label>
+
+      <Input label="Description" type="text" value={description} onChange={(e) => setDescription(e.target.value)} />
 
       {/* Additional properties based on timer type */}
       {timerType === 'Stopwatch' && (

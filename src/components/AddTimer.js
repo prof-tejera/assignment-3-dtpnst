@@ -10,6 +10,7 @@ const AddTimer = () => {
   const [duration, setDuration] = useState( 0);
   const [restTime, setRestTime] = useState( 0);
   const [numRounds, setNumRounds] = useState( 0);
+  const [description, setDescription] = useState('');
 
   const handleAddTimer = () => {
 
@@ -19,12 +20,14 @@ const AddTimer = () => {
         duration: duration,
         restTime: restTime,
         numRounds,
+        description
       };
       console.log(newTimer);
       addTimer(newTimer);
       setDuration(0);
       setRestTime(0);
       setNumRounds(0);
+      setDescription('');
 
   };
 
@@ -40,6 +43,8 @@ const AddTimer = () => {
           <option value="Tabata">Tabata</option>
         </select>
       </label>
+
+      <Input label="Description" type="text" onChange={(e) => setDescription(e.target.value)} />
 
       {/* Additional properties based on timer type */}
       {timerType === 'Stopwatch' && (

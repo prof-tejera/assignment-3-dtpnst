@@ -118,7 +118,7 @@ const TimersView = () => {
       </div>
       {timers.map((timer, index) => (
         <Timer key={timer.id} className={(timer.id === currentTimerId) ? 'runningTimer' : 'notRunningTimer'}>
-          <TimerTitle>#{index+1} {timer.type}</TimerTitle>
+          <TimerTitle>{timer.description}</TimerTitle>
           <FontAwesomeIcon icon={faPenToSquare} style={buttonStyle} onClick={() => handleEditTimer(timer.id)} />
           <FontAwesomeIcon icon={faAngleUp} style={buttonStyle} onClick={() => handleMoveTimerUp(timer.id)} />
           <FontAwesomeIcon icon={faAngleDown} style={buttonStyle} onClick={() => handleMoveTimerDown(timer.id)} />
