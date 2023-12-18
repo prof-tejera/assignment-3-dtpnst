@@ -35,7 +35,9 @@ We want to create a new screen that displays a list of previous workouts (create
 
 ## Deliverables
 - Complete all features listed above
-- As always deploy your app 
+- As always deploy your app
+  https://prof-tejera.github.io/assignment-3-dtpnst
+
 ## Grading Rubric
 We will be grading based on the features listed above and overall code quality
 - Persisting state (20pt)
